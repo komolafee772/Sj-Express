@@ -1,0 +1,77 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #f8fafc;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  color: #1e293b;
+  background-color: #f8fafc;
+}
+
+/* Custom Spreadsheet Styles */
+.spreadsheet-table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.spreadsheet-table th {
+  background: #f1f5f9;
+  border-bottom: 2px solid #e2e8f0;
+  border-right: 1px solid #e2e8f0;
+  padding: 10px;
+  font-weight: 600;
+  text-align: left;
+  color: #475569;
+}
+
+.spreadsheet-table td {
+  border-bottom: 1px solid #e2e8f0;
+  border-right: 1px solid #e2e8f0;
+  padding: 0;
+  background: white;
+}
+
+.spreadsheet-cell {
+  width: 100%;
+  height: 100%;
+  padding: 8px 12px;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+}
+
+.spreadsheet-cell:focus-within {
+  border-color: #1A4D8F;
+  box-shadow: inset 0 0 0 1px #1A4D8F;
+  outline: none;
+}
+
+.spreadsheet-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 0;
+}
+
+/* African-inspired pattern */
+.bg-pattern {
+  background-color: #1A4D8F;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM34 4V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
