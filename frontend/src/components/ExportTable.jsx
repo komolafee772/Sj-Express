@@ -254,50 +254,135 @@ const ExportTable = ({ data, setExports, fetchExports }) => {
       <div className="lg:hidden divide-y divide-slate-100">
         {data.map((item) => (
           <div key={item.id} className="p-4 bg-white active:bg-slate-50 transition-colors">
-            <div className="flex justify-between items-start mb-3">
-              <div>
-                <h3 className="font-bold text-slate-800 text-lg">{item.client_name}</h3>
-                <p className="text-sm text-slate-500">{item.destination || 'No destination'}</p>
+            {editingId === item.id ? (
+              /* Mobile Edit Mode */
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 gap-4">
+                  <div>
+                    <label className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Client Name</label>
+                    <input 
+                      name="client_name"
+                      value={editValues.client_name}
+                      onChange={handleChange}
+                      className="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Destination</label>
+                    <input 
+                      name="destination"
+                      value={editValues.destination}
+                      onChange={handleChange}
+                      className="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Goods</label>
+                      <input 
+                        name="goods_type"
+                        value={editValues.goods_type}
+                        onChange={handleChange}
+                        className="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Amount ($)</label>
+                      <input 
+                        name="amount"
+                        type="number"
+                        value={editValues.amount}
+                        onChange={handleChange}
+                        className="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none font-mono"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Weight (kg)</label>
+                      <input 
+                        name="weight_kg"
+                        type="number"
+                        value={editValues.weight_kg}
+                        onChange={handleChange}
+                        className="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none font-mono"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Recipient</label>
+                      <input 
+                        name="recipient_name"
+                        value={editValues.recipient_name}
+                        onChange={handleChange}
+                        className="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                      />
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex gap-2 pt-2">
+                  <button 
+                    onClick={() => handleSave(item.id)}
+                    className="flex-grow py-3 bg-green-500 text-white rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-green-100 active:scale-95 transition-all"
+                  >
+                    <Check className="w-5 h-5" />
+                    Save Changes
+                  </button>
+                  <button 
+                    onClick={handleCancel}
+                    className="px-4 bg-slate-100 text-slate-500 rounded-xl font-bold flex items-center justify-center active:scale-95 transition-all"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
               </div>
-              <div className="flex gap-2">
-                <button 
-                  onClick={() => confirmDelete(item.id)}
-                  className="p-2 text-red-500 bg-red-50 rounded-lg"
-                >
-                  <Trash2 className="w-5 h-5" />
-                </button>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-y-3 gap-x-4 mb-4">
-              <div>
-                <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Goods</p>
-                <span className="inline-block bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-xs font-semibold">
-                  {item.goods_type}
-                </span>
-              </div>
-              <div>
-                <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Amount</p>
-                <p className="text-sm font-mono font-bold text-primary">${item.amount}</p>
-              </div>
-              <div>
-                <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Weight</p>
-                <p className="text-sm text-slate-700">{item.weight_kg}kg</p>
-              </div>
-              <div>
-                <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Recipient</p>
-                <p className="text-sm text-slate-700 truncate">{item.recipient_name || 'N/A'}</p>
-              </div>
-            </div>
+            ) : (
+              /* Mobile View Mode */
+              <>
+                <div className="flex justify-between items-start mb-3">
+                  <div>
+                    <h3 className="font-bold text-slate-800 text-lg">{item.client_name}</h3>
+                    <p className="text-sm text-slate-500">{item.destination || 'No destination'}</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={() => confirmDelete(item.id)}
+                      className="p-2 text-red-500 bg-red-50 rounded-lg active:bg-red-100 transition-colors"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-y-3 gap-x-4 mb-4">
+                  <div>
+                    <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Goods</p>
+                    <span className="inline-block bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-xs font-semibold">
+                      {item.goods_type}
+                    </span>
+                  </div>
+                  <div>
+                    <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Amount</p>
+                    <p className="text-sm font-mono font-bold text-primary">${item.amount}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Weight</p>
+                    <p className="text-sm text-slate-700">{item.weight_kg}kg</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Recipient</p>
+                    <p className="text-sm text-slate-700 truncate">{item.recipient_name || 'N/A'}</p>
+                  </div>
+                </div>
 
-            <div className="flex gap-2">
-               <button 
-                  onClick={() => startEditing(item)}
-                  className="flex-grow py-2 px-4 bg-slate-100 text-slate-700 rounded-lg text-sm font-semibold hover:bg-slate-200 transition-colors"
-                >
-                  Edit Details
-                </button>
-            </div>
+                <div className="flex gap-2">
+                   <button 
+                      onClick={() => startEditing(item)}
+                      className="flex-grow py-2 px-4 bg-primary/5 text-primary rounded-lg text-sm font-bold hover:bg-primary/10 active:bg-primary/20 transition-colors border border-primary/10"
+                    >
+                      Edit Details
+                    </button>
+                </div>
+              </>
+            )}
           </div>
         ))}
       </div>
