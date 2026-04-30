@@ -2,6 +2,7 @@ import React from 'react';
 import { Toaster } from 'react-hot-toast';
 import Navbar from './components/Navbar';
 import Dashboard from './pages/Dashboard';
+import InstallPrompt from './components/InstallPrompt';
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
         <Dashboard />
       </main>
       <Toaster position="bottom-right" />
+      <InstallPrompt />
       
       {/* African pattern footer decoration */}
       <div className="h-2 bg-pattern w-full mt-auto" />
