@@ -1,13 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { exportService } from '../services/api';
 import ExportTable from '../components/ExportTable';
-import { Plus, Search, RefreshCw } from 'lucide-react';
+import { Plus, Search, RefreshCw, Share2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const Dashboard = () => {
   const [exports, setExports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+
+  const handleShareAll = () => {
+    const url = `${window.location.origin}/view-all`;
+    navigator.clipboard.writeText(url);
+    toast.success('Manifest share link copied!');
+  };
 
   const fetchExports = async () => {
     setLoading(true);
@@ -80,6 +86,15 @@ const Dashboard = () => {
               />
             </div>
             
+            <button 
+              onClick={handleShareAll}
+              className="flex items-center justify-center space-x-2 bg-slate-100 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-200 transition-all font-semibold whitespace-nowrap"
+              title="Share entire manifest"
+            >
+              <Share2 className="w-5 h-5" />
+              <span className="hidden sm:inline">Share All</span>
+            </button>
+
             <button 
               onClick={handleAddRow}
               className="flex items-center justify-center space-x-2 bg-primary text-white px-6 py-2 rounded-lg hover:bg-secondary transition-all shadow-md font-semibold whitespace-nowrap"

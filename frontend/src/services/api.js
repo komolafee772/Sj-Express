@@ -11,6 +11,7 @@ const api = axios.create({
 
 export const exportService = {
   getAll: () => api.get('/exports'),
+  getById: (id) => api.get(`/exports/${id}`),
   create: (data) => api.post('/exports', data),
   update: (id, data) => api.put(`/exports/${id}`, data),
   delete: (id) => api.delete(`/exports/${id}`),

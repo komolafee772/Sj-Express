@@ -93,6 +93,20 @@ const deleteExport = async (req, res) => {
   }
 };
 
+const getExportById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [rows] = await db.query('SELECT * FROM exports WHERE id = ?', [id]);
+    if (rows.length === 0) {
+      return res.status(404).json({ message: 'Export not found' });
+    }
+    res.status(200).json(rows[0]);
+  } catch (error) {
+    console.error(`Controller: Error fetching export ID ${id}:`, error.message);
+    res.status(500).json({ message: 'Error fetching export', error: error.message });
+  }
+};
+
 const exportToExcel = async (req, res) => {
   try {
     const [rows] = await db.query('SELECT * FROM exports');
@@ -118,6 +132,7 @@ const exportToPdf = async (req, res) => {
 
 module.exports = {
   getAllExports,
+  getExportById,
   createExport,
   updateExport,
   deleteExport,

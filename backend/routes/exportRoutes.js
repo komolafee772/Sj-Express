@@ -3,6 +3,7 @@ const router = express.Router();
 const exportController = require('../controllers/exportController');
 
 router.get('/exports', exportController.getAllExports);
+router.get('/exports/:id', exportController.getExportById);
 router.post('/exports', exportController.createExport);
 router.put('/exports/:id', exportController.updateExport);
 router.delete('/exports/:id', exportController.deleteExport);
