@@ -21,16 +21,21 @@ const initDB = async () => {
     const createTableQuery = `
       CREATE TABLE IF NOT EXISTS exports (
         id INT AUTO_INCREMENT PRIMARY KEY,
-        client_name VARCHAR(255) NOT NULL,
-        contact_details VARCHAR(255),
-        goods_type VARCHAR(255),
-        weight_kg DECIMAL(10, 2),
+        client_name VARCHAR(150) NOT NULL,
+        contact_details VARCHAR(100) NOT NULL,
+        goods_type VARCHAR(150) NOT NULL,
+        weight_kg DECIMAL(10, 2) NOT NULL,
         amount DECIMAL(15, 2) DEFAULT 0.00,
         destination VARCHAR(255),
         recipient_name VARCHAR(255),
         recipient_contact VARCHAR(255),
         pieces INT DEFAULT 0,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        sender_address TEXT,
+        receiver_address TEXT,
+        package_description TEXT,
+        is_locked TINYINT(1) DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
       )
     `;
     await db.query(createTableQuery);
@@ -42,33 +47,31 @@ const initDB = async () => {
       { name: 'destination', type: 'VARCHAR(255)' },
       { name: 'recipient_name', type: 'VARCHAR(255)' },
       { name: 'recipient_contact', type: 'VARCHAR(255)' },
-      { name: 'pieces', type: 'INT DEFAULT 0' }
+      { name: 'pieces', type: 'INT DEFAULT 0' },
+      { name: 'sender_address', type: 'TEXT' },
+      { name: 'receiver_address', type: 'TEXT' },
+      { name: 'package_description', type: 'TEXT' },
+      { name: 'is_locked', type: 'TINYINT(1) DEFAULT 0' },
+      { name: 'updated_at', type: 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP' }
     ];
 
-    for (const column of columnsToAdd) {
+    for (const col of columnsToAdd) {
       try {
-        await db.query(`ALTER TABLE exports ADD COLUMN ${column.name} ${column.type}`);
-        console.log(`Added column "${column.name}" to "exports" table.`);
+        await db.query(`ALTER TABLE exports ADD COLUMN ${col.name} ${col.type}`);
+        console.log(`Added column: ${col.name}`);
       } catch (err) {
-        // mysql2 returns error codes in err.code. ER_DUP_COLUMN_NAME is 'ER_DUP_COLUMN_NAME'
-        if (err.code !== 'ER_DUP_COLUMN_NAME' && err.errno !== 1060) {
-          console.error(`Error adding column ${column.name}:`, err.message);
-        }
+        // Column likely already exists
       }
     }
 
     console.log('Database initialization complete. Table "exports" is ready.');
   } catch (error) {
-    console.error('Critical Database initialization error:', error.message);
-    // Log the full error for debugging but don't stop the server unless connection fails
-    if (error.code === 'ECONNREFUSED' || error.code === 'ER_ACCESS_DENIED_ERROR') {
-      console.error('Failed to connect to database. Please check your credentials.');
-    }
+    console.error('Database initialization error:', error.message);
   }
 };
 
-// Start Server
-app.listen(PORT, async () => {
+initDB();
+
+app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-  await initDB();
 });

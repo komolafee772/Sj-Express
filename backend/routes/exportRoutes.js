@@ -6,6 +6,7 @@ router.get('/exports', exportController.getAllExports);
 router.get('/exports/:id', exportController.getExportById);
 router.post('/exports', exportController.createExport);
 router.put('/exports/:id', exportController.updateExport);
+router.put('/exports/:id/lock', exportController.lockExport);
 router.delete('/exports/:id', exportController.deleteExport);
 
 router.get('/export/excel', exportController.exportToExcel);

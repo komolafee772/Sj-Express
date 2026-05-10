@@ -1,247 +1,133 @@
 import React, { useState } from 'react';
-import { Trash2, Check, X } from 'lucide-react';
+import { Trash2, Check, X, Lock, MoreHorizontal, Eye, Calendar, MapPin, Package, DollarSign, User, ChevronRight, Weight, FileText, Hash, Phone } from 'lucide-react';
 import { exportService } from '../services/api';
 import toast from 'react-hot-toast';
 import Modal from './Modal';
+import ExportDetailsModal from './ExportDetailsModal';
 
 const ExportTable = ({ data, setExports, fetchExports }) => {
-  const [editingId, setEditingId] = useState(null);
-  const [editValues, setEditValues] = useState({});
-  const [deleteModal, setDeleteModal] = useState({ isOpen: false, id: null });
+  const [detailsModal, setDetailsModal] = useState({ isOpen: false, record: null, editMode: false });
 
-  const startEditing = (record) => {
-    setEditingId(record.id);
-    setEditValues({ ...record });
-  };
-
-  const handleCancel = () => {
-    setEditingId(null);
-    setEditValues({});
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setEditValues({ ...editValues, [name]: value });
-  };
-
-  const handleSave = async (id) => {
-    try {
-      await exportService.update(id, editValues);
-      setExports(prev => prev.map(item => item.id === id ? editValues : item));
-      setEditingId(null);
-      toast.success('Record updated');
-    } catch (error) {
-      toast.error('Failed to update record');
-    }
-  };
-
-  const confirmDelete = (id) => {
-    setDeleteModal({ isOpen: true, id });
-  };
-
-  const handleDelete = async () => {
-    const { id } = deleteModal;
-    try {
-      await exportService.delete(id);
-      setExports(prev => prev.filter(item => item.id !== id));
-      toast.success('Record deleted');
-    } catch (error) {
-      toast.error('Failed to delete record');
-    }
+  const openDetails = (record, editMode = false) => {
+    setDetailsModal({ isOpen: true, record, editMode });
   };
 
   return (
     <>
-      {/* Desktop Table View */}
-      <div className="hidden lg:block overflow-x-auto">
-        <table className="spreadsheet-table w-full">
+      {/* Desktop View - Non-Scrolling, Wrapped Text, Bolder Borders */}
+      <div className="hidden lg:block w-full overflow-hidden border-2 border-slate-300 rounded-lg shadow-md">
+        <table className="w-full table-fixed border-collapse bg-white">
           <thead>
-            <tr>
-              <th className="w-12 text-center">#</th>
-              <th>Client Name</th>
-              <th>Contact Details</th>
-              <th>Goods Type</th>
-              <th className="w-24">Weight</th>
-              <th className="w-24">Amount</th>
-              <th>Destination</th>
-              <th>Recipient</th>
-              <th>Rec. Contact</th>
-              <th className="w-20">Pieces</th>
-              <th className="w-24 text-center">Actions</th>
+            <tr className="bg-slate-100/90 border-b-2 border-slate-400">
+              <th className="w-8 text-center text-slate-700 font-black text-[9px] uppercase py-3 px-[3px] border-r border-slate-300">#</th>
+              <th className="w-20 text-left text-slate-700 font-black text-[9px] uppercase px-[3px] border-r border-slate-300">ID</th>
+              <th className="w-20 text-left text-slate-700 font-black text-[9px] uppercase px-[3px] border-r border-slate-300">Date</th>
+              <th className="w-28 text-left text-slate-700 font-black text-[9px] uppercase px-[3px] border-r border-slate-300">Sender</th>
+              <th className="w-32 text-left text-slate-700 font-black text-[9px] uppercase px-[3px] border-r border-slate-300">S. Address</th>
+              <th className="w-28 text-left text-slate-700 font-black text-[9px] uppercase px-[3px] border-r border-slate-300">Receiver</th>
+              <th className="w-32 text-left text-slate-700 font-black text-[9px] uppercase px-[3px] border-r border-slate-300">R. Address</th>
+              <th className="w-20 text-left text-slate-700 font-black text-[9px] uppercase px-[3px] border-r border-slate-300">Goods</th>
+              <th className="w-24 text-left text-slate-700 font-black text-[9px] uppercase px-[3px] border-r border-slate-300">Dest</th>
+              <th className="w-12 text-center text-slate-700 font-black text-[9px] uppercase px-[3px] border-r border-slate-300">Pcs</th>
+              <th className="w-12 text-center text-slate-700 font-black text-[9px] uppercase px-[3px] border-r border-slate-300">Kg</th>
+              <th className="w-20 text-right text-slate-700 font-black text-[9px] uppercase px-[3px] border-r border-slate-300">Amt</th>
+              <th className="w-32 text-left text-slate-700 font-black text-[9px] uppercase px-[3px] border-r border-slate-300">Desc</th>
+              <th className="w-14 text-center text-slate-700 font-black text-[9px] uppercase px-[3px]">Act</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y border-b border-slate-300">
             {data.map((item, index) => (
-              <tr key={item.id} className="hover:bg-slate-50 transition-colors">
-                <td className="text-center text-slate-400 text-sm border-r border-slate-200 bg-slate-50/50">{index + 1}</td>
+              <tr 
+                key={item.id} 
+                onClick={() => openDetails(item)}
+                className={`group transition-all duration-200 cursor-pointer border-b border-slate-300 ${item.is_locked ? 'bg-slate-50/50' : 'hover:bg-primary/[0.05]'}`}
+              >
+                <td className="text-center py-2 px-[3px] border-r border-slate-300">
+                   <span className="text-slate-500 text-[10px] font-black font-mono">{index + 1}</span>
+                </td>
                 
-                <td>
-                  <div className="spreadsheet-cell" onClick={() => editingId !== item.id && startEditing(item)}>
-                    {editingId === item.id ? (
-                      <input 
-                        name="client_name"
-                        value={editValues.client_name}
-                        onChange={handleChange}
-                        autoFocus
-                        className="spreadsheet-input font-medium text-primary"
-                      />
-                    ) : (
-                      <span className="font-medium text-slate-700">{item.client_name}</span>
-                    )}
-                  </div>
-                </td>
-                <td>
-                  <div className="spreadsheet-cell" onClick={() => editingId !== item.id && startEditing(item)}>
-                    {editingId === item.id ? (
-                      <input 
-                        name="contact_details"
-                        value={editValues.contact_details}
-                        onChange={handleChange}
-                        className="spreadsheet-input"
-                      />
-                    ) : (
-                      <span className="text-slate-600">{item.contact_details}</span>
-                    )}
+                <td className="px-[3px] border-r border-slate-300">
+                  <div className="flex items-center gap-1">
+                    {item.is_locked && <Lock className="w-2.5 h-2.5 text-slate-400 flex-shrink-0" />}
+                    <span className="font-mono font-black text-slate-900 text-[9px] leading-none bg-slate-200/50 px-1 py-0.5 rounded border border-slate-300 break-all">
+                      EXP-{item.id}
+                    </span>
                   </div>
                 </td>
 
-                <td>
-                  <div className="spreadsheet-cell" onClick={() => editingId !== item.id && startEditing(item)}>
-                    {editingId === item.id ? (
-                      <input 
-                        name="goods_type"
-                        value={editValues.goods_type}
-                        onChange={handleChange}
-                        className="spreadsheet-input"
-                      />
-                    ) : (
-                      <span className="inline-block bg-slate-100 text-slate-600 px-2 py-1 rounded text-xs font-semibold">
-                        {item.goods_type}
-                      </span>
-                    )}
+                <td className="px-[3px] border-r border-slate-300">
+                  <span className="text-slate-700 text-[9px] font-bold leading-tight">
+                    {new Date(item.created_at).toLocaleDateString()}
+                  </span>
+                </td>
+
+                <td className="px-[3px] border-r border-slate-300">
+                  <div className="flex flex-col gap-0.5 overflow-hidden">
+                    <p className="font-black text-slate-900 text-[10px] leading-tight break-words">{item.client_name}</p>
+                    <p className="text-[8px] text-slate-500 font-bold break-all">{item.contact_details}</p>
                   </div>
                 </td>
 
-                <td>
-                  <div className="spreadsheet-cell" onClick={() => editingId !== item.id && startEditing(item)}>
-                    {editingId === item.id ? (
-                      <input 
-                        name="weight_kg"
-                        type="number"
-                        value={editValues.weight_kg}
-                        onChange={handleChange}
-                        className="spreadsheet-input text-right"
-                      />
-                    ) : (
-                      <div className="text-right font-mono text-slate-700">{item.weight_kg}kg</div>
-                    )}
+                <td className="px-[3px] border-r border-slate-300">
+                  <p className="text-[9px] text-slate-800 font-medium leading-tight break-words">
+                    {item.sender_address || 'N/A'}
+                  </p>
+                </td>
+
+                <td className="px-[3px] border-r border-slate-300">
+                  <div className="flex flex-col gap-0.5 overflow-hidden">
+                    <p className="font-black text-slate-800 text-[10px] leading-tight break-words">{item.recipient_name || 'N/A'}</p>
+                    <p className="text-[8px] text-slate-500 font-bold break-all">{item.recipient_contact}</p>
                   </div>
                 </td>
 
-                <td>
-                  <div className="spreadsheet-cell" onClick={() => editingId !== item.id && startEditing(item)}>
-                    {editingId === item.id ? (
-                      <input 
-                        name="amount"
-                        type="number"
-                        value={editValues.amount}
-                        onChange={handleChange}
-                        className="spreadsheet-input text-right"
-                      />
-                    ) : (
-                      <div className="text-right font-mono text-slate-700">${item.amount}</div>
-                    )}
-                  </div>
+                <td className="px-[3px] border-r border-slate-300">
+                  <p className="text-[9px] text-slate-800 font-medium leading-tight break-words">
+                    {item.receiver_address || 'N/A'}
+                  </p>
                 </td>
 
-                <td>
-                  <div className="spreadsheet-cell" onClick={() => editingId !== item.id && startEditing(item)}>
-                    {editingId === item.id ? (
-                      <input 
-                        name="destination"
-                        value={editValues.destination}
-                        onChange={handleChange}
-                        className="spreadsheet-input"
-                      />
-                    ) : (
-                      <span className="text-slate-600">{item.destination}</span>
-                    )}
-                  </div>
+                <td className="px-[3px] border-r border-slate-300">
+                  <span className="inline-block text-[8px] font-black text-primary bg-primary/10 px-1 py-0.5 rounded border border-primary/20 uppercase tracking-tighter break-words">
+                    {item.goods_type}
+                  </span>
                 </td>
 
-                <td>
-                  <div className="spreadsheet-cell" onClick={() => editingId !== item.id && startEditing(item)}>
-                    {editingId === item.id ? (
-                      <input 
-                        name="recipient_name"
-                        value={editValues.recipient_name}
-                        onChange={handleChange}
-                        className="spreadsheet-input"
-                      />
-                    ) : (
-                      <span className="text-slate-700">{item.recipient_name}</span>
-                    )}
-                  </div>
+                <td className="px-[3px] border-r border-slate-300">
+                  <span className="text-slate-900 text-[9px] font-black uppercase tracking-tighter bg-slate-50 px-1 py-0.5 rounded border border-slate-200 break-words">
+                    {item.destination || 'N/A'}
+                  </span>
                 </td>
 
-                <td>
-                  <div className="spreadsheet-cell" onClick={() => editingId !== item.id && startEditing(item)}>
-                    {editingId === item.id ? (
-                      <input 
-                        name="recipient_contact"
-                        value={editValues.recipient_contact}
-                        onChange={handleChange}
-                        className="spreadsheet-input"
-                      />
-                    ) : (
-                      <span className="text-slate-600">{item.recipient_contact}</span>
-                    )}
-                  </div>
+                <td className="px-[3px] text-center border-r border-slate-300">
+                  <span className="text-slate-900 text-[9px] font-black font-mono">
+                    {item.pieces || 0}
+                  </span>
                 </td>
 
-                <td>
-                  <div className="spreadsheet-cell" onClick={() => editingId !== item.id && startEditing(item)}>
-                    {editingId === item.id ? (
-                      <input 
-                        name="pieces"
-                        type="number"
-                        value={editValues.pieces}
-                        onChange={handleChange}
-                        className="spreadsheet-input text-right"
-                      />
-                    ) : (
-                      <div className="text-right font-mono text-slate-700">{item.pieces}</div>
-                    )}
-                  </div>
+                <td className="px-[3px] text-center border-r border-slate-300">
+                  <span className="text-slate-900 text-[9px] font-black font-mono">
+                     {item.weight_kg || 0}
+                  </span>
                 </td>
 
-                <td className="p-2">
-                  <div className="flex justify-center space-x-2">
-                    {editingId === item.id ? (
-                      <>
-                        <button 
-                          onClick={() => handleSave(item.id)}
-                          className="p-1.5 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
-                        >
-                          <Check className="w-4 h-4" />
-                        </button>
-                        <button 
-                          onClick={handleCancel}
-                          className="p-1.5 bg-slate-400 text-white rounded hover:bg-slate-500 transition-colors"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
-                      </>
-                    ) : (
-                      <>
-                        <button 
-                          onClick={() => confirmDelete(item.id)}
-                          className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors rounded"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </>
-                    )}
+                <td className="px-[3px] text-right border-r border-slate-300">
+                  <span className="font-mono font-black text-primary text-[10px]">
+                    ${item.amount || 0}
+                  </span>
+                </td>
+
+                <td className="px-[3px] border-r border-slate-300">
+                   <p className="text-[9px] text-slate-600 italic font-medium leading-tight break-words">
+                     {item.package_description || 'N/A'}
+                   </p>
+                </td>
+
+                <td className="px-[3px] text-center">
+                  <div className="flex justify-center">
+                    <div className="p-1 text-slate-400 group-hover:text-red-600 transition-colors">
+                      <Trash2 className="w-4 h-4" />
+                    </div>
                   </div>
                 </td>
               </tr>
@@ -250,151 +136,93 @@ const ExportTable = ({ data, setExports, fetchExports }) => {
         </table>
       </div>
 
-      {/* Mobile Card View */}
-      <div className="lg:hidden divide-y divide-slate-100">
+      {/* Mobile Card View (remains optimized) */}
+      <div className="lg:hidden grid grid-cols-1 gap-5 p-4">
         {data.map((item) => (
-          <div key={item.id} className="p-4 bg-white active:bg-slate-50 transition-colors">
-            {editingId === item.id ? (
-              /* Mobile Edit Mode */
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 gap-4">
-                  <div>
-                    <label className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Client Name</label>
-                    <input 
-                      name="client_name"
-                      value={editValues.client_name}
-                      onChange={handleChange}
-                      className="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Destination</label>
-                    <input 
-                      name="destination"
-                      value={editValues.destination}
-                      onChange={handleChange}
-                      className="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
-                    />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Goods</label>
-                      <input 
-                        name="goods_type"
-                        value={editValues.goods_type}
-                        onChange={handleChange}
-                        className="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Amount ($)</label>
-                      <input 
-                        name="amount"
-                        type="number"
-                        value={editValues.amount}
-                        onChange={handleChange}
-                        className="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none font-mono"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Weight (kg)</label>
-                      <input 
-                        name="weight_kg"
-                        type="number"
-                        value={editValues.weight_kg}
-                        onChange={handleChange}
-                        className="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none font-mono"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Recipient</label>
-                      <input 
-                        name="recipient_name"
-                        value={editValues.recipient_name}
-                        onChange={handleChange}
-                        className="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
-                      />
-                    </div>
-                  </div>
+          <div 
+            key={item.id} 
+            onClick={() => openDetails(item)}
+            className={`bg-white rounded-[2.5rem] border border-slate-200 p-6 shadow-sm active:scale-[0.98] transition-all relative overflow-hidden group ${item.is_locked ? 'bg-slate-50/50' : 'hover:border-primary/30 hover:shadow-md'}`}
+          >
+            {/* Status Indicator */}
+            <div className={`absolute top-0 left-0 w-2.5 h-full ${item.is_locked ? 'bg-slate-200' : 'bg-primary'}`} />
+            
+            <div className="flex justify-between items-start mb-6 pl-4">
+              <div className="flex-grow min-w-0 pr-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="font-mono text-[10px] font-black text-slate-400 uppercase tracking-widest bg-slate-100 px-2 py-1.5 rounded-xl border border-slate-200/50">
+                    EXP-{item.id}
+                  </span>
+                  {item.is_locked && <Lock className="w-3.5 h-3.5 text-slate-300" />}
                 </div>
-                
-                <div className="flex gap-2 pt-2">
-                  <button 
-                    onClick={() => handleSave(item.id)}
-                    className="flex-grow py-3 bg-green-500 text-white rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-green-100 active:scale-95 transition-all"
-                  >
-                    <Check className="w-5 h-5" />
-                    Save Changes
-                  </button>
-                  <button 
-                    onClick={handleCancel}
-                    className="px-4 bg-slate-100 text-slate-500 rounded-xl font-bold flex items-center justify-center active:scale-95 transition-all"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
+                <h3 className="text-xl font-black text-slate-900 leading-tight truncate">{item.client_name}</h3>
+                <p className="text-xs text-slate-500 font-bold flex items-center gap-2 mt-2">
+                   <Phone className="w-3.5 h-3.5 text-slate-300" /> {item.contact_details}
+                </p>
+              </div>
+              <div className="text-right whitespace-nowrap">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Amount</p>
+                <p className="text-2xl font-black text-primary">${item.amount || 0}</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 mb-6 pl-4">
+               <div className="flex items-center gap-4 bg-slate-50/50 p-4 rounded-[1.5rem] border border-slate-100">
+                  <div className="bg-white p-2.5 rounded-2xl shadow-sm text-primary">
+                    <User className="w-5 h-5" />
+                  </div>
+                  <div className="flex-grow min-w-0">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Receiver</p>
+                    <p className="text-sm text-slate-700 font-black truncate">{item.recipient_name || 'N/A'}</p>
+                  </div>
+                  <div className="text-right">
+                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Pieces</p>
+                     <p className="text-sm text-slate-800 font-black">{item.pieces || 0}</p>
+                  </div>
+               </div>
+
+               <div className="flex items-center gap-4 bg-slate-50/50 p-4 rounded-[1.5rem] border border-slate-100">
+                  <div className="bg-white p-2.5 rounded-2xl shadow-sm text-amber-500">
+                    <MapPin className="w-5 h-5" />
+                  </div>
+                  <div className="flex-grow min-w-0">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Destination</p>
+                    <p className="text-sm text-slate-700 font-black truncate">{item.destination || 'N/A'}</p>
+                  </div>
+                  <div className="text-right whitespace-nowrap">
+                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Weight</p>
+                     <p className="text-sm text-slate-800 font-black">{item.weight_kg || 0} <span className="text-[10px] font-bold">kg</span></p>
+                  </div>
+               </div>
+            </div>
+
+            <div className="flex items-center justify-between pt-6 border-t border-slate-100 pl-4">
+              <div className="flex items-center gap-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                <span className="flex items-center gap-2">
+                  <Calendar className="w-4 h-4 text-slate-200" />
+                  {new Date(item.created_at).toLocaleDateString()}
+                </span>
+                <span className="flex items-center gap-2 bg-primary/5 text-primary px-2.5 py-1 rounded-lg border border-primary/10">
+                  <Package className="w-4 h-4" />
+                  {item.goods_type}
+                </span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="bg-slate-50 p-2.5 rounded-2xl text-slate-300 group-hover:text-red-500 group-hover:bg-red-50 transition-all border border-transparent group-hover:border-red-100">
+                   <Trash2 className="w-6 h-6" />
                 </div>
               </div>
-            ) : (
-              /* Mobile View Mode */
-              <>
-                <div className="flex justify-between items-start mb-3">
-                  <div>
-                    <h3 className="font-bold text-slate-800 text-lg">{item.client_name}</h3>
-                    <p className="text-sm text-slate-500">{item.destination || 'No destination'}</p>
-                  </div>
-                  <div className="flex gap-2">
-                    <button 
-                      onClick={() => confirmDelete(item.id)}
-                      className="p-2 text-red-500 bg-red-50 rounded-lg active:bg-red-100 transition-colors"
-                    >
-                      <Trash2 className="w-5 h-5" />
-                    </button>
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-y-3 gap-x-4 mb-4">
-                  <div>
-                    <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Goods</p>
-                    <span className="inline-block bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-xs font-semibold">
-                      {item.goods_type}
-                    </span>
-                  </div>
-                  <div>
-                    <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Amount</p>
-                    <p className="text-sm font-mono font-bold text-primary">${item.amount}</p>
-                  </div>
-                  <div>
-                    <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Weight</p>
-                    <p className="text-sm text-slate-700">{item.weight_kg}kg</p>
-                  </div>
-                  <div>
-                    <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Recipient</p>
-                    <p className="text-sm text-slate-700 truncate">{item.recipient_name || 'N/A'}</p>
-                  </div>
-                </div>
-
-                <div className="flex gap-2">
-                   <button 
-                      onClick={() => startEditing(item)}
-                      className="flex-grow py-2 px-4 bg-primary/5 text-primary rounded-lg text-sm font-bold hover:bg-primary/10 active:bg-primary/20 transition-colors border border-primary/10"
-                    >
-                      Edit Details
-                    </button>
-                </div>
-              </>
-            )}
+            </div>
           </div>
         ))}
       </div>
 
-      <Modal 
-        isOpen={deleteModal.isOpen}
-        onClose={() => setDeleteModal({ isOpen: false, id: null })}
-        onConfirm={handleDelete}
-        title="Delete Record"
-        message="Are you sure you want to delete this record? This action cannot be undone."
-        confirmText="Delete"
-        type="danger"
+      <ExportDetailsModal 
+        isOpen={detailsModal.isOpen}
+        onClose={() => setDetailsModal({ isOpen: false, record: null, editMode: false })}
+        record={detailsModal.record}
+        fetchExports={fetchExports}
+        initialEditMode={detailsModal.editMode}
       />
     </>
   );

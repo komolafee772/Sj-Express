@@ -33,17 +33,17 @@ body {
 
 .spreadsheet-table th {
   background: #f1f5f9;
-  border-bottom: 2px solid #e2e8f0;
-  border-right: 1px solid #e2e8f0;
+  border-bottom: 2px solid #94a3b8;
+  border-right: 1px solid #94a3b8;
   padding: 10px;
   font-weight: 600;
   text-align: left;
-  color: #475569;
+  color: #1e293b;
 }
 
 .spreadsheet-table td {
-  border-bottom: 1px solid #e2e8f0;
-  border-right: 1px solid #e2e8f0;
+  border-bottom: 1px solid #cbd5e1;
+  border-right: 1px solid #cbd5e1;
   padding: 0;
   background: white;
 }
@@ -68,6 +68,42 @@ body {
   border: none;
   outline: none;
   padding: 0;
+}
+
+/* Custom Scrollbar for Spreadsheet */
+.custom-scrollbar::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Sticky Column Utilities */
+.sticky-col {
+  position: sticky;
+  z-index: 10;
+}
+
+.sticky-left-0 {
+  left: 0;
+  background: white !important;
+}
+
+.sticky-right-0 {
+  right: 0;
+  background: white !important;
 }
 
 /* African-inspired pattern */
