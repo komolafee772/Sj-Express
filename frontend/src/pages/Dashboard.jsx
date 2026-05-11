@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { exportService } from '../services/api';
 import ExportTable from '../components/ExportTable';
 import AddExportModal from '../components/AddExportModal';
-import { Plus, Search, RefreshCw, Share2 } from 'lucide-react';
+import { Plus, Search, RefreshCw, Share2, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const Dashboard = () => {
@@ -69,10 +69,18 @@ const Dashboard = () => {
                 <input 
                   type="text" 
                   placeholder="Search names, ID..." 
-                  className="pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all w-full font-bold text-sm"
+                  className="pl-11 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all w-full font-bold text-sm"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
+                {searchTerm && (
+                  <button 
+                    onClick={() => setSearchTerm('')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
               </div>
               
               <button 

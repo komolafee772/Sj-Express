@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { exportService } from '../services/api';
-import { Package, MapPin, User, Phone, Weight, DollarSign, Loader2, AlertCircle, Search, Filter, Home, ArrowLeft, ChevronRight, Calendar } from 'lucide-react';
+import { Package, MapPin, User, Phone, Weight, DollarSign, Loader2, AlertCircle, Search, Filter, Home, ArrowLeft, ChevronRight, Calendar, X, CreditCard } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
@@ -75,10 +75,18 @@ const PublicViewAll = () => {
           <input 
             type="text" 
             placeholder="Search by name, ID, or destination..."
-            className="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+            className="w-full pl-10 pr-10 py-3 bg-white border border-slate-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
+          {searchTerm && (
+            <button 
+              onClick={() => setSearchTerm('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
         </div>
       </div>
 
@@ -92,6 +100,7 @@ const PublicViewAll = () => {
               <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider text-right">Weight</th>
               <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider text-right">Amount</th>
               <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Recipient</th>
+              <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Paid By</th>
               <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Destination</th>
               <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider text-right">Action</th>
             </tr>
@@ -118,6 +127,11 @@ const PublicViewAll = () => {
                 <td className="px-6 py-4">
                   <p className="text-sm font-semibold text-slate-700">{item.recipient_name || 'N/A'}</p>
                   <p className="text-xs text-slate-400">{item.recipient_contact}</p>
+                </td>
+                <td className="px-6 py-4">
+                  <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-lg border ${item.paid_by === 'Sender' ? 'bg-blue-50 text-blue-600 border-blue-100' : 'bg-amber-50 text-amber-600 border-amber-100'}`}>
+                    {item.paid_by || 'Sender'}
+                  </span>
                 </td>
                 <td className="px-6 py-4">
                   <span className="text-sm text-slate-600 flex items-center gap-1">
@@ -189,6 +203,12 @@ const PublicViewAll = () => {
                    <User className="w-3 h-3" /> Recipient
                 </p>
                 <p className="text-sm text-slate-700 font-bold truncate">{item.recipient_name || 'N/A'}</p>
+              </div>
+              <div>
+                <p className="text-[10px] uppercase font-black text-slate-400 tracking-widest mb-1.5 flex items-center gap-1.5">
+                   <CreditCard className="w-3 h-3" /> Paid By
+                </p>
+                <p className={`text-sm font-black ${item.paid_by === 'Sender' ? 'text-blue-600' : 'text-amber-600'}`}>{item.paid_by || 'Sender'}</p>
               </div>
               <div>
                 <p className="text-[10px] uppercase font-black text-slate-400 tracking-widest mb-1.5 flex items-center gap-1.5">

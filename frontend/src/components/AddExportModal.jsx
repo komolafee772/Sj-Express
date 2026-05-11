@@ -1,7 +1,47 @@
 import React, { useState } from 'react';
-import { X, User, Phone, MapPin, Package, Weight, DollarSign, FileText, Hash, Loader2 } from 'lucide-react';
+import { X, User, Phone, MapPin, Package, Weight, DollarSign, FileText, Hash, Loader2, CreditCard } from 'lucide-react';
 import { exportService } from '../services/api';
 import toast from 'react-hot-toast';
+
+const InputGroup = ({ icon: Icon, label, name, type = "text", placeholder, required = false, isTextArea = false, isSelect = false, options = [], formData, handleChange }) => (
+  <div className="flex flex-col gap-1.5">
+    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-2">
+      <Icon className="w-3 h-3" /> {label} {required && <span className="text-red-500">*</span>}
+    </label>
+    {isTextArea ? (
+      <textarea
+        name={name}
+        value={formData[name]}
+        onChange={handleChange}
+        placeholder={placeholder}
+        rows="3"
+        className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all text-sm font-medium resize-none bg-slate-50/50"
+      />
+    ) : isSelect ? (
+      <select
+        name={name}
+        value={formData[name]}
+        onChange={handleChange}
+        className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all text-sm font-medium bg-slate-50/50 appearance-none"
+      >
+        {options.map(opt => (
+          <option key={opt} value={opt}>{opt}</option>
+        ))}
+      </select>
+    ) : (
+      <input
+        type={type}
+        name={name}
+        step={type === 'number' && (name === 'weight_kg' || name === 'amount') ? 'any' : type === 'number' ? '1' : undefined}
+        value={formData[name]}
+        onChange={handleChange}
+        placeholder={placeholder}
+        required={required}
+        className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all text-sm font-medium bg-slate-50/50"
+      />
+    )}
+  </div>
+);
 
 const AddExportModal = ({ isOpen, onClose, onRefresh }) => {
   const [loading, setLoading] = useState(false);
@@ -17,7 +57,8 @@ const AddExportModal = ({ isOpen, onClose, onRefresh }) => {
     weight_kg: '',
     amount: '',
     destination: '',
-    pieces: ''
+    pieces: '',
+    paid_by: 'Sender'
   });
 
   if (!isOpen) return null;
@@ -49,33 +90,6 @@ const AddExportModal = ({ isOpen, onClose, onRefresh }) => {
     }
   };
 
-  const InputGroup = ({ icon: Icon, label, name, type = "text", placeholder, required = false, isTextArea = false }) => (
-    <div className="flex flex-col gap-1.5">
-      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-2">
-        <Icon className="w-3 h-3" /> {label} {required && <span className="text-red-500">*</span>}
-      </label>
-      {isTextArea ? (
-        <textarea
-          name={name}
-          value={formData[name]}
-          onChange={handleChange}
-          placeholder={placeholder}
-          rows="3"
-          className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all text-sm font-medium resize-none bg-slate-50/50"
-        />
-      ) : (
-        <input
-          type={type}
-          name={name}
-          value={formData[name]}
-          onChange={handleChange}
-          placeholder={placeholder}
-          required={required}
-          className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all text-sm font-medium bg-slate-50/50"
-        />
-      )}
-    </div>
-  );
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -117,9 +131,9 @@ const AddExportModal = ({ isOpen, onClose, onRefresh }) => {
                 <div className="h-4 w-1 bg-primary rounded-full" />
                 <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest">Sender Information</h3>
               </div>
-              <InputGroup icon={User} label="Sender Name" name="client_name" placeholder="Full name of the sender" required />
-              <InputGroup icon={Phone} label="Contact Details" name="contact_details" placeholder="Phone or email" required />
-              <InputGroup icon={FileText} label="Sender Address" name="sender_address" placeholder="Pick-up or residence address" isTextArea />
+              <InputGroup icon={User} label="Sender Name" name="client_name" placeholder="Full name of the sender" required formData={formData} handleChange={handleChange} />
+              <InputGroup icon={Phone} label="Contact Details" name="contact_details" placeholder="Phone or email" required formData={formData} handleChange={handleChange} />
+              <InputGroup icon={FileText} label="Sender Address" name="sender_address" placeholder="Pick-up or residence address" isTextArea formData={formData} handleChange={handleChange} />
             </div>
 
             {/* Recipient Section */}
@@ -128,9 +142,9 @@ const AddExportModal = ({ isOpen, onClose, onRefresh }) => {
                 <div className="h-4 w-1 bg-secondary rounded-full" />
                 <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest">Recipient Information</h3>
               </div>
-              <InputGroup icon={User} label="Recipient Name" name="recipient_name" placeholder="Full name of the receiver" />
-              <InputGroup icon={Phone} label="Recipient Contact" name="recipient_contact" placeholder="Receiver's contact" />
-              <InputGroup icon={FileText} label="Receiver Address" name="receiver_address" placeholder="Delivery or residence address" isTextArea />
+              <InputGroup icon={User} label="Recipient Name" name="recipient_name" placeholder="Full name of the receiver" formData={formData} handleChange={handleChange} />
+              <InputGroup icon={Phone} label="Recipient Contact" name="recipient_contact" placeholder="Receiver's contact" formData={formData} handleChange={handleChange} />
+              <InputGroup icon={FileText} label="Receiver Address" name="receiver_address" placeholder="Delivery or residence address" isTextArea formData={formData} handleChange={handleChange} />
             </div>
 
             {/* Shipment Section */}
@@ -140,14 +154,15 @@ const AddExportModal = ({ isOpen, onClose, onRefresh }) => {
                 <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest">Shipment Details</h3>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <InputGroup icon={Package} label="Goods Type" name="goods_type" placeholder="e.g. Electronics, Food" required />
-                <InputGroup icon={MapPin} label="Destination" name="destination" placeholder="City or Country" />
-                <InputGroup icon={Weight} label="Weight (kg)" name="weight_kg" type="number" placeholder="0.00" />
-                <InputGroup icon={Hash} label="Pieces" name="pieces" type="number" placeholder="0" />
+                <InputGroup icon={Package} label="Goods Type" name="goods_type" placeholder="e.g. Electronics, Food" required formData={formData} handleChange={handleChange} />
+                <InputGroup icon={MapPin} label="Destination" name="destination" placeholder="City or Country" formData={formData} handleChange={handleChange} />
+                <InputGroup icon={Weight} label="Weight (kg)" name="weight_kg" type="number" placeholder="0.00" formData={formData} handleChange={handleChange} />
+                <InputGroup icon={Hash} label="Pieces" name="pieces" type="number" placeholder="0" formData={formData} handleChange={handleChange} />
+                <InputGroup icon={CreditCard} label="Paid By" name="paid_by" isSelect options={['Sender', 'Receiver']} formData={formData} handleChange={handleChange} />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                 <InputGroup icon={DollarSign} label="Total Amount" name="amount" type="number" placeholder="0.00" />
-                 <InputGroup icon={FileText} label="Package Description" name="package_description" placeholder="Briefly describe the contents" isTextArea />
+                 <InputGroup icon={DollarSign} label="Total Amount" name="amount" type="number" placeholder="0.00" formData={formData} handleChange={handleChange} />
+                 <InputGroup icon={FileText} label="Package Description" name="package_description" placeholder="Briefly describe the contents" isTextArea formData={formData} handleChange={handleChange} />
               </div>
             </div>
           </div>

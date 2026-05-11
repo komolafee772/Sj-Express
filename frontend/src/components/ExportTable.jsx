@@ -50,7 +50,7 @@ const ExportTable = ({ data, setExports, fetchExports }) => {
                   <div className="flex items-center gap-1">
                     {item.is_locked && <Lock className="w-2.5 h-2.5 text-slate-400 flex-shrink-0" />}
                     <span className="font-mono font-black text-slate-900 text-[9px] leading-none bg-slate-200/50 px-1 py-0.5 rounded border border-slate-300 break-all">
-                      EXP-{item.id}
+                      EXP-{item.id.toString().padStart(5, '0')}
                     </span>
                   </div>
                 </td>
@@ -151,7 +151,7 @@ const ExportTable = ({ data, setExports, fetchExports }) => {
               <div className="flex-grow min-w-0 pr-4">
                 <div className="flex items-center gap-2 mb-3">
                   <span className="font-mono text-[10px] font-black text-slate-400 uppercase tracking-widest bg-slate-100 px-2 py-1.5 rounded-xl border border-slate-200/50">
-                    EXP-{item.id}
+                    EXP-{item.id.toString().padStart(5, '0')}
                   </span>
                   {item.is_locked && <Lock className="w-3.5 h-3.5 text-slate-300" />}
                 </div>

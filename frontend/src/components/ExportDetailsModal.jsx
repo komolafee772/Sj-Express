@@ -4,6 +4,49 @@ import { exportService } from '../services/api';
 import toast from 'react-hot-toast';
 import PrintTemplate from './PrintTemplate';
 
+const DetailField = ({ icon: Icon, label, name, value, editable = true, isTextArea = false, isSelect = false, options = [], isEditing, record, editData, handleEditChange }) => (
+  <div className="space-y-1 bg-slate-50 p-3 rounded-2xl border border-slate-100">
+    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+      <Icon className="w-3 h-3" /> {label}
+    </label>
+    {isEditing && editable && !record.is_locked ? (
+      isTextArea ? (
+        <textarea
+          name={name}
+          value={editData[name] || ''}
+          onChange={handleEditChange}
+          className="w-full bg-white border border-primary/20 rounded-lg px-2 py-1 text-sm outline-none focus:ring-2 focus:ring-primary/10 resize-none"
+          rows="2"
+        />
+      ) : isSelect ? (
+        <select
+          name={name}
+          value={editData[name] || ''}
+          onChange={handleEditChange}
+          className="w-full bg-white border border-primary/20 rounded-lg px-2 py-1 text-sm outline-none focus:ring-2 focus:ring-primary/10 appearance-none"
+        >
+          {options.map(opt => (
+            <option key={opt} value={opt}>{opt}</option>
+          ))}
+        </select>
+      ) : (
+        <input
+          type={name.includes('weight') || name.includes('amount') || name.includes('pieces') ? 'number' : 'text'}
+          name={name}
+          step={name.includes('weight') || name.includes('amount') ? 'any' : '1'}
+          value={editData[name] ?? ''}
+          onChange={handleEditChange}
+          className="w-full bg-white border border-primary/20 rounded-lg px-2 py-1 text-sm outline-none focus:ring-2 focus:ring-primary/10 transition-all"
+        />
+      )
+    ) : (
+      <p className={`text-sm font-semibold text-slate-700 ${isTextArea ? 'italic leading-relaxed' : ''}`}>
+        {value || 'N/A'}
+      </p>
+    )}
+  </div>
+);
+
 const ExportDetailsModal = ({ isOpen, onClose, record, fetchExports, initialEditMode = false }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState({});
@@ -71,36 +114,6 @@ const ExportDetailsModal = ({ isOpen, onClose, record, fetchExports, initialEdit
     }
   };
 
-  const DetailField = ({ icon: Icon, label, name, value, editable = true, isTextArea = false }) => (
-    <div className="space-y-1 bg-slate-50 p-3 rounded-2xl border border-slate-100">
-      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-        <Icon className="w-3 h-3" /> {label}
-      </label>
-      {isEditing && editable && !record.is_locked ? (
-        isTextArea ? (
-          <textarea
-            name={name}
-            value={editData[name] || ''}
-            onChange={handleEditChange}
-            className="w-full bg-white border border-primary/20 rounded-lg px-2 py-1 text-sm outline-none focus:ring-2 focus:ring-primary/10 resize-none"
-            rows="2"
-          />
-        ) : (
-          <input
-            type={name.includes('weight') || name.includes('amount') || name.includes('pieces') ? 'number' : 'text'}
-            name={name}
-            value={editData[name] || ''}
-            onChange={handleEditChange}
-            className="w-full bg-white border border-primary/20 rounded-lg px-2 py-1 text-sm outline-none focus:ring-2 focus:ring-primary/10"
-          />
-        )
-      ) : (
-        <p className={`text-sm font-semibold text-slate-700 ${isTextArea ? 'italic leading-relaxed' : ''}`}>
-          {value || 'N/A'}
-        </p>
-      )}
-    </div>
-  );
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200 print:hidden">
@@ -150,9 +163,9 @@ const ExportDetailsModal = ({ isOpen, onClose, record, fetchExports, initialEdit
                   <h3 className="font-black text-slate-800 uppercase text-[10px] tracking-widest">Sender Information</h3>
                 </div>
                 <div className="grid grid-cols-1 gap-4">
-                  <DetailField icon={User} label="Full Name" name="client_name" value={record.client_name} />
-                  <DetailField icon={Phone} label="Phone Number" name="contact_details" value={record.contact_details} />
-                  <DetailField icon={MapPin} label="Address" name="sender_address" value={record.sender_address} isTextArea />
+                  <DetailField icon={User} label="Full Name" name="client_name" value={record.client_name} isEditing={isEditing} record={record} editData={editData} handleEditChange={handleEditChange} />
+                  <DetailField icon={Phone} label="Phone Number" name="contact_details" value={record.contact_details} isEditing={isEditing} record={record} editData={editData} handleEditChange={handleEditChange} />
+                  <DetailField icon={MapPin} label="Address" name="sender_address" value={record.sender_address} isTextArea isEditing={isEditing} record={record} editData={editData} handleEditChange={handleEditChange} />
                 </div>
               </section>
 
@@ -164,9 +177,9 @@ const ExportDetailsModal = ({ isOpen, onClose, record, fetchExports, initialEdit
                   <h3 className="font-black text-slate-800 uppercase text-[10px] tracking-widest">Receiver Information</h3>
                 </div>
                 <div className="grid grid-cols-1 gap-4">
-                  <DetailField icon={User} label="Full Name" name="recipient_name" value={record.recipient_name} />
-                  <DetailField icon={Phone} label="Phone Number" name="recipient_contact" value={record.recipient_contact} />
-                  <DetailField icon={MapPin} label="Address" name="receiver_address" value={record.receiver_address} isTextArea />
+                  <DetailField icon={User} label="Full Name" name="recipient_name" value={record.recipient_name} isEditing={isEditing} record={record} editData={editData} handleEditChange={handleEditChange} />
+                  <DetailField icon={Phone} label="Phone Number" name="recipient_contact" value={record.recipient_contact} isEditing={isEditing} record={record} editData={editData} handleEditChange={handleEditChange} />
+                  <DetailField icon={MapPin} label="Address" name="receiver_address" value={record.receiver_address} isTextArea isEditing={isEditing} record={record} editData={editData} handleEditChange={handleEditChange} />
                 </div>
               </section>
             </div>
@@ -181,13 +194,12 @@ const ExportDetailsModal = ({ isOpen, onClose, record, fetchExports, initialEdit
                   <h3 className="font-black text-slate-800 uppercase text-[10px] tracking-widest">Shipment Details</h3>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
-                  <DetailField icon={Package} label="Goods Type" name="goods_type" value={record.goods_type} />
-                  <DetailField icon={Package} label="Pieces" name="pieces" value={record.pieces} />
-                  <DetailField icon={Weight} label="Weight (kg)" name="weight_kg" value={record.weight_kg} />
-                  <DetailField icon={DollarSign} label="Amount ($)" name="amount" value={record.amount} />
-                  <div className="col-span-2">
-                    <DetailField icon={MapPin} label="Destination" name="destination" value={record.destination} />
-                  </div>
+                  <DetailField icon={Package} label="Goods Type" name="goods_type" value={record.goods_type} isEditing={isEditing} record={record} editData={editData} handleEditChange={handleEditChange} />
+                  <DetailField icon={Package} label="Pieces" name="pieces" value={record.pieces} isEditing={isEditing} record={record} editData={editData} handleEditChange={handleEditChange} />
+                  <DetailField icon={Weight} label="Weight (kg)" name="weight_kg" value={record.weight_kg} isEditing={isEditing} record={record} editData={editData} handleEditChange={handleEditChange} />
+                  <DetailField icon={DollarSign} label="Amount ($)" name="amount" value={record.amount} isEditing={isEditing} record={record} editData={editData} handleEditChange={handleEditChange} />
+                  <DetailField icon={CreditCard} label="Paid By" name="paid_by" value={record.paid_by} isSelect options={['Sender', 'Receiver']} isEditing={isEditing} record={record} editData={editData} handleEditChange={handleEditChange} />
+                  <DetailField icon={MapPin} label="Destination" name="destination" value={record.destination} isEditing={isEditing} record={record} editData={editData} handleEditChange={handleEditChange} />
                 </div>
               </section>
 
@@ -198,7 +210,7 @@ const ExportDetailsModal = ({ isOpen, onClose, record, fetchExports, initialEdit
                   </div>
                   <h3 className="font-black text-slate-800 uppercase text-[10px] tracking-widest">Description / Notes</h3>
                 </div>
-                <DetailField icon={StickyNote} label="Notes" name="package_description" value={record.package_description} isTextArea />
+                <DetailField icon={StickyNote} label="Notes" name="package_description" value={record.package_description} isTextArea isEditing={isEditing} record={record} editData={editData} handleEditChange={handleEditChange} />
               </section>
             </div>
           </div>

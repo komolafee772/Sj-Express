@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { exportService } from '../services/api';
-import { Package, MapPin, User, Phone, Weight, DollarSign, Calendar, ChevronLeft, Loader2, AlertCircle, Lock, Info, CheckCircle2, Clock, FileText, Home } from 'lucide-react';
+import { Package, MapPin, User, Phone, Weight, DollarSign, Calendar, ChevronLeft, Loader2, AlertCircle, Lock, Info, CheckCircle2, Clock, FileText, Home, CreditCard } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const PublicView = () => {
@@ -158,7 +158,11 @@ const PublicView = () => {
                     <p className="font-bold text-white bg-white/20 px-2 py-0.5 rounded inline-block text-xs uppercase tracking-wider">Verified</p>
                  </div>
                  <div className="text-right">
-                    <p className="text-blue-100 text-[10px] uppercase font-black tracking-widest mb-1">Total Amount</p>
+                    <p className="text-blue-100 text-[10px] uppercase font-black tracking-widest mb-1">Paid By</p>
+                    <p className="text-sm font-black text-white bg-white/10 px-2 py-0.5 rounded-lg border border-white/10 inline-block uppercase tracking-wider mb-2">
+                       {data.paid_by || 'Sender'}
+                    </p>
+                    <p className="text-[10px] uppercase font-black text-blue-100 tracking-widest mb-1">Total Amount</p>
                     <p className="text-3xl font-black">${data.amount}</p>
                  </div>
               </div>

@@ -33,7 +33,8 @@ const createExport = async (req, res) => {
     pieces: Number(req.body.pieces || 0),
     sender_address: req.body.sender_address || null,
     receiver_address: req.body.receiver_address || null,
-    package_description: req.body.package_description || null
+    package_description: req.body.package_description || null,
+    paid_by: req.body.paid_by || 'Sender'
   };
 
   try {
@@ -63,7 +64,8 @@ const updateExport = async (req, res) => {
       pieces: req.body.pieces !== undefined ? req.body.pieces : existing[0].pieces,
       sender_address: req.body.sender_address !== undefined ? req.body.sender_address : existing[0].sender_address,
       receiver_address: req.body.receiver_address !== undefined ? req.body.receiver_address : existing[0].receiver_address,
-      package_description: req.body.package_description !== undefined ? req.body.package_description : existing[0].package_description
+      package_description: req.body.package_description !== undefined ? req.body.package_description : existing[0].package_description,
+      paid_by: req.body.paid_by !== undefined ? req.body.paid_by : existing[0].paid_by
     };
 
     await db.query('UPDATE exports SET ? WHERE id = ?', [data, id]);
