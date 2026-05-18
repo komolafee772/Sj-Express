@@ -4,6 +4,12 @@ import { Package, MapPin, User, Phone, Weight, DollarSign, Loader2, AlertCircle,
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
+const getCurrencySymbol = (currency) => {
+  if (currency === 'Euro') return '€';
+  if (currency === 'Dalasis') return 'D';
+  return '$';
+};
+
 const PublicViewAll = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -123,7 +129,7 @@ const PublicViewAll = () => {
                   </div>
                 </td>
                 <td className="px-6 py-4 text-right font-mono text-slate-600">{item.weight_kg} kg</td>
-                <td className="px-6 py-4 text-right font-bold text-slate-900">${item.amount}</td>
+                <td className="px-6 py-4 text-right font-bold text-slate-900">{getCurrencySymbol(item.currency)}{item.amount}</td>
                 <td className="px-6 py-4">
                   <p className="text-sm font-semibold text-slate-700">{item.recipient_name || 'N/A'}</p>
                   <p className="text-xs text-slate-400">{item.recipient_contact}</p>
@@ -196,7 +202,7 @@ const PublicViewAll = () => {
                 <p className="text-[10px] uppercase font-black text-slate-400 tracking-widest mb-1.5 flex items-center gap-1.5">
                    <DollarSign className="w-3 h-3" /> Amount
                 </p>
-                <p className="text-sm text-primary font-black">${item.amount}</p>
+                <p className="text-sm text-primary font-black">{getCurrencySymbol(item.currency)}{item.amount}</p>
               </div>
               <div>
                 <p className="text-[10px] uppercase font-black text-slate-400 tracking-widest mb-1.5 flex items-center gap-1.5">

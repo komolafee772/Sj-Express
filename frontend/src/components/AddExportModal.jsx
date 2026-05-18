@@ -58,7 +58,8 @@ const AddExportModal = ({ isOpen, onClose, onRefresh }) => {
     amount: '',
     destination: '',
     pieces: '',
-    paid_by: 'Sender'
+    paid_by: 'Sender',
+    currency: 'Dollar'
   });
 
   if (!isOpen) return null;
@@ -160,8 +161,9 @@ const AddExportModal = ({ isOpen, onClose, onRefresh }) => {
                 <InputGroup icon={Hash} label="Pieces" name="pieces" type="number" placeholder="0" formData={formData} handleChange={handleChange} />
                 <InputGroup icon={CreditCard} label="Paid By" name="paid_by" isSelect options={['Sender', 'Receiver']} formData={formData} handleChange={handleChange} />
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                  <InputGroup icon={DollarSign} label="Total Amount" name="amount" type="number" placeholder="0.00" formData={formData} handleChange={handleChange} />
+                 <InputGroup icon={DollarSign} label="Currency" name="currency" isSelect options={['Dollar', 'Euro', 'Dalasis']} formData={formData} handleChange={handleChange} />
                  <InputGroup icon={FileText} label="Package Description" name="package_description" placeholder="Briefly describe the contents" isTextArea formData={formData} handleChange={handleChange} />
               </div>
             </div>

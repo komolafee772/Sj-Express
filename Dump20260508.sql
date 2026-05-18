@@ -47,6 +47,7 @@ CREATE TABLE `exports` (
   `receiver_address` text,
   `package_description` text,
   `paid_by`text,
+  `currency` varchar(50) DEFAULT 'Dollar',
   `is_locked` tinyint(1) DEFAULT '0',
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)

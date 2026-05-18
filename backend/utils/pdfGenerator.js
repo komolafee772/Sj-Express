@@ -1,5 +1,11 @@
 const PDFDocument = require('pdfkit');
 
+const getCurrencySymbol = (currency) => {
+  if (currency === 'Euro') return '€';
+  if (currency === 'Dalasis') return 'D';
+  return '$';
+};
+
 const generate = (data, res) => {
   const doc = new PDFDocument({ margin: 30, layout: 'landscape' });
 
@@ -61,7 +67,7 @@ const generate = (data, res) => {
     doc.text(item.client_name || '', 30, y, { width: 90 });
     doc.text(item.goods_type || '', 130, y, { width: 70 });
     doc.text(`${item.weight_kg || 0}kg`, 210, y, { width: 50 });
-    doc.text(`$${item.amount || 0}`, 270, y, { width: 60 });
+    doc.text(`${getCurrencySymbol(item.currency)}${item.amount || 0}`, 270, y, { width: 60 });
     doc.text(item.destination || '', 340, y, { width: 100 });
     doc.text(item.recipient_name || '', 450, y, { width: 100 });
     doc.text(item.recipient_contact || '', 560, y, { width: 110 });

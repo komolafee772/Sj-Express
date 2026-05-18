@@ -1,6 +1,12 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
 
+const getCurrencySymbol = (currency) => {
+  if (currency === 'Euro') return '€';
+  if (currency === 'Dalasis') return 'D';
+  return '$';
+};
+
 const PrintTemplate = ({ record }) => {
   if (!record) return null;
 
@@ -54,6 +60,13 @@ const PrintTemplate = ({ record }) => {
             <div>
               <h1 className="text-4xl font-black tracking-tighter text-slate-900 leading-none">SJ-EXPRESS</h1>
               <p className="text-[10px] font-black text-primary uppercase tracking-[0.3em] mt-2">Logistics & Export Solutions</p>
+              <p className="text-[9px] font-bold text-slate-500 mt-1.5 flex items-center gap-2">
+                <span>+220 233 2680</span>
+                <span className="text-slate-300">|</span>
+                <span>+34 613 93 50 37</span>
+                <span className="text-slate-300">|</span>
+                <span>+220 209 4259</span>
+              </p>
             </div>
           </div>
           <div className="text-right">
@@ -127,13 +140,13 @@ const PrintTemplate = ({ record }) => {
                 </td>
                 <td className="p-4 text-sm font-mono font-black text-center border border-slate-300">{record.pieces || 0}</td>
                 <td className="p-4 text-sm font-mono font-black text-center border border-slate-300">{record.weight_kg || 0} kg</td>
-                <td className="p-4 text-lg font-mono font-black text-right border border-slate-300 text-primary">${record.amount || 0}</td>
+                <td className="p-4 text-lg font-mono font-black text-right border border-slate-300 text-primary">{getCurrencySymbol(record.currency)}{record.amount || 0}</td>
               </tr>
             </tbody>
             <tfoot>
                <tr className="bg-slate-100">
                  <td colSpan="3" className="p-4 text-[10px] font-black uppercase text-right border border-slate-300">Total Valuation</td>
-                 <td className="p-4 text-xl font-mono font-black text-right border border-slate-300 text-slate-900">${record.amount || 0}</td>
+                 <td className="p-4 text-xl font-mono font-black text-right border border-slate-300 text-slate-900">{getCurrencySymbol(record.currency)}{record.amount || 0}</td>
                </tr>
             </tfoot>
           </table>
@@ -153,6 +166,9 @@ const PrintTemplate = ({ record }) => {
 
         {/* Footer */}
         <div className="text-center border-t border-slate-100 pt-6">
+          <p className="text-[8px] text-slate-500 font-bold uppercase tracking-wider mb-1">
+            Contact: +220 233 2680 / +34 613 93 50 37 / +220 209 4259
+          </p>
           <p className="text-[8px] text-slate-400 font-bold uppercase tracking-widest">
             Print Date: {new Date().toLocaleDateString()} | Time: {new Date().toLocaleTimeString()} | Manifest: EXP-{record.id}
           </p>

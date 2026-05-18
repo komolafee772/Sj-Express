@@ -4,6 +4,12 @@ import { exportService } from '../services/api';
 import { Package, MapPin, User, Phone, Weight, DollarSign, Calendar, ChevronLeft, Loader2, AlertCircle, Lock, Info, CheckCircle2, Clock, FileText, Home, CreditCard } from 'lucide-react';
 import toast from 'react-hot-toast';
 
+const getCurrencySymbol = (currency) => {
+  if (currency === 'Euro') return '€';
+  if (currency === 'Dalasis') return 'D';
+  return '$';
+};
+
 const PublicView = () => {
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
@@ -163,7 +169,7 @@ const PublicView = () => {
                        {data.paid_by || 'Sender'}
                     </p>
                     <p className="text-[10px] uppercase font-black text-blue-100 tracking-widest mb-1">Total Amount</p>
-                    <p className="text-3xl font-black">${data.amount}</p>
+                    <p className="text-3xl font-black">{getCurrencySymbol(data.currency)}{data.amount}</p>
                  </div>
               </div>
               

@@ -5,6 +5,12 @@ import toast from 'react-hot-toast';
 import Modal from './Modal';
 import ExportDetailsModal from './ExportDetailsModal';
 
+const getCurrencySymbol = (currency) => {
+  if (currency === 'Euro') return '€';
+  if (currency === 'Dalasis') return 'D';
+  return '$';
+};
+
 const ExportTable = ({ data, setExports, fetchExports }) => {
   const [detailsModal, setDetailsModal] = useState({ isOpen: false, record: null, editMode: false });
 
@@ -113,7 +119,7 @@ const ExportTable = ({ data, setExports, fetchExports }) => {
 
                 <td className="px-[3px] text-right border-r border-slate-300">
                   <span className="font-mono font-black text-primary text-[10px]">
-                    ${item.amount || 0}
+                    {getCurrencySymbol(item.currency)}{item.amount || 0}
                   </span>
                 </td>
 
@@ -162,7 +168,7 @@ const ExportTable = ({ data, setExports, fetchExports }) => {
               </div>
               <div className="text-right whitespace-nowrap">
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Amount</p>
-                <p className="text-2xl font-black text-primary">${item.amount || 0}</p>
+                <p className="text-2xl font-black text-primary">{getCurrencySymbol(item.currency)}{item.amount || 0}</p>
               </div>
             </div>
 

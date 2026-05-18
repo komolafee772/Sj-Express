@@ -52,6 +52,7 @@ const initDB = async () => {
       { name: 'receiver_address', type: 'TEXT' },
       { name: 'package_description', type: 'TEXT' },
       { name: 'is_locked', type: 'TINYINT(1) DEFAULT 0' },
+      { name: 'currency', type: "VARCHAR(50) DEFAULT 'Dollar'" },
       { name: 'updated_at', type: 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP' }
     ];
 

@@ -47,6 +47,12 @@ const DetailField = ({ icon: Icon, label, name, value, editable = true, isTextAr
   </div>
 );
 
+const getCurrencySymbol = (currency) => {
+  if (currency === 'Euro') return '€';
+  if (currency === 'Dalasis') return 'D';
+  return '$';
+};
+
 const ExportDetailsModal = ({ isOpen, onClose, record, fetchExports, initialEditMode = false }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState({});
@@ -55,7 +61,10 @@ const ExportDetailsModal = ({ isOpen, onClose, record, fetchExports, initialEdit
 
   useEffect(() => {
     if (record) {
-      setEditData({ ...record });
+      setEditData({ 
+        ...record,
+        currency: record.currency || 'Dollar'
+      });
       if (initialEditMode && !record.is_locked) {
         setIsEditing(true);
       } else {
@@ -197,7 +206,8 @@ const ExportDetailsModal = ({ isOpen, onClose, record, fetchExports, initialEdit
                   <DetailField icon={Package} label="Goods Type" name="goods_type" value={record.goods_type} isEditing={isEditing} record={record} editData={editData} handleEditChange={handleEditChange} />
                   <DetailField icon={Package} label="Pieces" name="pieces" value={record.pieces} isEditing={isEditing} record={record} editData={editData} handleEditChange={handleEditChange} />
                   <DetailField icon={Weight} label="Weight (kg)" name="weight_kg" value={record.weight_kg} isEditing={isEditing} record={record} editData={editData} handleEditChange={handleEditChange} />
-                  <DetailField icon={DollarSign} label="Amount ($)" name="amount" value={record.amount} isEditing={isEditing} record={record} editData={editData} handleEditChange={handleEditChange} />
+                  <DetailField icon={DollarSign} label={`Amount (${getCurrencySymbol(record.currency)})`} name="amount" value={`${getCurrencySymbol(record.currency)}${record.amount}`} isEditing={isEditing} record={record} editData={editData} handleEditChange={handleEditChange} />
+                  <DetailField icon={DollarSign} label="Currency" name="currency" value={record.currency || 'Dollar'} isSelect options={['Dollar', 'Euro', 'Dalasis']} isEditing={isEditing} record={record} editData={editData} handleEditChange={handleEditChange} />
                   <DetailField icon={CreditCard} label="Paid By" name="paid_by" value={record.paid_by} isSelect options={['Sender', 'Receiver']} isEditing={isEditing} record={record} editData={editData} handleEditChange={handleEditChange} />
                   <DetailField icon={MapPin} label="Destination" name="destination" value={record.destination} isEditing={isEditing} record={record} editData={editData} handleEditChange={handleEditChange} />
                 </div>
